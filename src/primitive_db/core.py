@@ -1,6 +1,8 @@
+# src/primitive_db/core.py
+
 from typing import Any, Dict, List, Optional
 
-ALLOWED_TYPES = {'int', 'str', 'bool'}
+from src.primitive_db.constants import ALLOWED_TYPES
 
 def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) -> Dict[str, Any]:
     '''

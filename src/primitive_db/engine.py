@@ -6,9 +6,9 @@ from prettytable import PrettyTable
 
 from src.primitive_db import core
 from src.primitive_db import utils
-from src.primitive_db import parser  # Импортируем наш новый парсер
+from src.primitive_db import parser
 
-DB_FILE = 'db_meta.json'
+from src.primitive_db.constants import DB_META_PATH
 
 def print_help():
     '''
@@ -38,7 +38,7 @@ def run():
     print_help()
 
     while True:
-        metadata = utils.load_metadata(DB_FILE)
+        metadata = utils.load_metadata(DB_META_PATH)
         
         try:
             raw_input = prompt.string('>>>Введите команду: ')
@@ -61,7 +61,7 @@ def run():
                     table_name = args[1]
                     columns = args[2:]
                     new_metadata = core.create_table(metadata, table_name, columns)
-                    utils.save_metadata(DB_FILE, new_metadata)
+                    utils.save_metadata(DB_META_PATH, new_metadata)
 
             elif command == 'drop_table':
                 if len(args) < 2:
@@ -69,7 +69,7 @@ def run():
                 else:
                     table_name = args[1]
                     new_metadata = core.drop_table(metadata, table_name)
-                    utils.save_metadata(DB_FILE, new_metadata)
+                    utils.save_metadata(DB_META_PATH, new_metadata)
             
             elif command == 'list_tables':
                 core.list_tables(metadata)
