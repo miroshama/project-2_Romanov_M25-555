@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "poetry init project-2-romanov-m25-555"
 version = "0.1.0"
-description = ""
+description = "project2 for python mephi by Romanov Mikhail"
 authors = ["Mikhail <miroshama@gmail.com>"]
 readme = "README.md"
 packages = [
