@@ -18,7 +18,7 @@ def load_metadata(filepath: str) -> Dict[str, Any]:
 
 def save_metadata(filepath: str, data: Dict[str, Any]) -> None:
     '''
-    Docstring for save_metadata
+    Функция для сохранения полученных данных
     
     Переменная filepath: путь до json файла
     Переменная data: переданные данные
