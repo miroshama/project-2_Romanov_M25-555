@@ -14,7 +14,12 @@ def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) 
         print(f'Ошибка: Таблица "{table_name}" уже существует.')
         return metadata
 
-    table_schema = [{'name': 'ID', 'type': 'int'}]
+    user_col_names = [col.split(':')[0].lower() for col in columns if ':' in col]
+
+    table_schema = []
+    
+    if 'id' not in user_col_names:
+        table_schema.append({'name': 'ID', 'type': 'int'})
 
     for col_def in columns:
         if ':' not in col_def:
@@ -26,6 +31,9 @@ def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) 
         if col_type not in ALLOWED_TYPES:
             print(f"Ошибка: Недопустимый тип данных '{col_type}'.")
             return metadata
+        
+        final_name = 'ID' if col_name.lower() == 'id' else col_name
+        table_schema.append({'name': final_name, 'type': col_type})
         
         table_schema.append({'name': col_name, 'type': col_type})
 
