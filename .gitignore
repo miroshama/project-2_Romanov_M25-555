@@ -1,4 +1,5 @@
 db_meta.json
+data/
 src/primitive_db/data/*
 !src/primitive_db/data/.gitkeep
 src/primitive_db/db_meta.json
