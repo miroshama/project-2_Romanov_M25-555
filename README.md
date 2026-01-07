@@ -54,5 +54,4 @@
 
 ## 🎥 Демонстрация asciinema
 
-[![asciicast](!!!)](!!!)
-
+[![asciicast](https://asciinema.org/a/glL8jVTV3M7MgxvPvZW4TgJog.svg)](https://asciinema.org/a/glL8jVTV3M7MgxvPvZW4TgJog)
