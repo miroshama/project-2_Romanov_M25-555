@@ -33,7 +33,7 @@ def run():
         
         try:
             user_input = prompt.string('>>>Введите команду: ')
-            if not user_input.strip():
+            if not user_input or not user_input.strip():
                 continue
             
             args = shlex.split(user_input)
@@ -48,19 +48,19 @@ def run():
             elif command == 'create_table':
                 if len(args) < 2:
                     print("Ошибка: Укажите имя таблицы.")
-                    continue
-                table_name = args[1]
-                columns = args[2:]
-                new_metadata = core.create_table(metadata, table_name, columns)
-                save_metadata(DB_FILE, new_metadata)
+                else:
+                    table_name = args[1]
+                    columns = args[2:]
+                    new_metadata = core.create_table(metadata, table_name, columns)
+                    save_metadata(DB_FILE, new_metadata)
 
             elif command == 'drop_table':
                 if len(args) < 2:
                     print("Ошибка: Укажите имя таблицы.")
-                    continue
-                table_name = args[1]
-                new_metadata = core.drop_table(metadata, table_name)
-                save_metadata(DB_FILE, new_metadata)
+                else:
+                    table_name = args[1]
+                    new_metadata = core.drop_table(metadata, table_name)
+                    save_metadata(DB_FILE, new_metadata)
             
             elif command == 'list_tables':
                 core.list_tables(metadata)
