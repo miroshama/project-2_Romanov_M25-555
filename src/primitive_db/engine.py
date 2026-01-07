@@ -1,9 +1,11 @@
 # src/primitive_db/engine.py
 
-import prompt
 import shlex
-from src.primitive_db.utils import load_metadata, save_metadata
+
+import prompt
+
 from src.primitive_db import core
+from src.primitive_db.utils import load_metadata, save_metadata
 
 DB_FILE = 'db_meta.json'
 

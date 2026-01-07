@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 ALLOWED_TYPES = {'int', 'str', 'bool'}
 
