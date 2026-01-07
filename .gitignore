@@ -1,3 +1,7 @@
+src/primitive_db/data/*
+!src/primitive_db/data/.gitkeep
+src/primitive_db/db_meta.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
