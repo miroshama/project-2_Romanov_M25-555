@@ -1,5 +1,3 @@
-# src/primitive_db/core.py
-
 from typing import Any, Dict, List, Optional, Tuple
 
 from src.primitive_db.constants import ALLOWED_TYPES
@@ -7,20 +5,28 @@ from src.primitive_db.decorators import confirm_action, handle_db_errors, log_ti
 
 
 def create_cacher():
-    """Создает кэшер с замкнутым словарем cache."""
+    '''
+    Функция для создания кэшера
+    '''
     cache = {}
 
-    def cache_result(key: str, value_func):
+    def cache_result(key: str = None, value_func=None, clear: bool = False):
+        if clear:
+            cache.clear()
+            return None
         if key in cache:
             return cache[key]
-        
-        result = value_func()
-        cache[key] = result
-        return result
+        if value_func:
+            result = value_func()
+            cache[key] = result
+            return result
+        return None
 
     return cache_result
 
+
 select_cacher = create_cacher()
+
 
 def cast_value(value: str, target_type: str) -> Any:
     '''
@@ -43,10 +49,11 @@ def cast_value(value: str, target_type: str) -> Any:
         raise ValueError(f"Невозможно преобразовать '{value}' в bool")
     return str(value).strip('"').strip("'")
 
+
 @handle_db_errors
 def create_table(
     metadata: Dict[str, Any], table_name: str, columns: List[str]
-    )-> Dict[str, Any]:
+) -> Dict[str, Any]:
     '''
     Функция создания таблицы
     
@@ -59,7 +66,7 @@ def create_table(
 
     user_col_names = [col.split(':')[0].lower() for col in columns if ':' in col]
     table_schema = []
-    
+
     if 'id' not in user_col_names:
         table_schema.append({'name': 'ID', 'type': 'int'})
 
@@ -69,20 +76,20 @@ def create_table(
                 f"Неверный формат столбца '{col_def}'. "
                 f"Используйте имя:тип"
             )
-        
+
         col_name, col_type = col_def.split(':', 1)
-        
+
         if col_type not in ALLOWED_TYPES:
             raise ValueError(
                 f"Недопустимый тип данных '{col_type}'. "
                 f"Доступны: {ALLOWED_TYPES}"
             )
-        
+
         final_name = 'ID' if col_name.lower() == 'id' else col_name
         table_schema.append({'name': final_name, 'type': col_type})
 
     metadata[table_name] = table_schema
-    
+
     col_str_list = [f"{col['name']}:{col['type']}" for col in table_schema]
     print(
         f'Таблица "{table_name}" успешно создана '
@@ -104,6 +111,7 @@ def drop_table(metadata: Dict[str, Any], table_name: str) -> Dict[str, Any]:
         raise KeyError(f'Таблица "{table_name}" не существует.')
 
     del metadata[table_name]
+    select_cacher(clear=True)
     print(f'Таблица "{table_name}" успешно удалена.')
     return metadata
 
@@ -132,17 +140,21 @@ def insert(
     '''
     if table_name not in metadata:
         raise KeyError(f'Таблица "{table_name}" не найдена в метаданных.')
-        
-    schema = metadata[table_name] 
-    
+
+    schema = metadata[table_name]
+
     if len(values) != len(schema) - 1:
-        raise ValueError(f"Ожидалось {len(schema)-1} значений, получено {len(values)}")
+        raise ValueError(
+            f"Ожидалось {len(schema)-1} значений, получено {len(values)}"
+        )
+
+    select_cacher(clear=True)
 
     new_row = {}
     for i, col_info in enumerate(schema[1:]):
         val = cast_value(values[i], col_info['type'])
         new_row[col_info['name']] = val
-    
+
     return new_row, 0
 
 
@@ -163,7 +175,7 @@ def select(
     def perform_select():
         if not where_clause:
             return table_data
-        
+
         result = []
         for row in table_data:
             match = True
@@ -175,8 +187,7 @@ def select(
                 result.append(row)
         return result
 
-    return select_cacher(cache_key, perform_select)
-
+    return select_cacher(key=cache_key, value_func=perform_select)
 
 @handle_db_errors
 def update(
@@ -194,8 +205,10 @@ def update(
     if not where_clause:
         raise ValueError("Для обновления необходимо условие where")
 
+    # Очищаем кэш при обновлении
+    select_cacher(clear=True)
+
     updated_ids = []
-    found_match = False
     
     for row in table_data:
         match = True
@@ -204,15 +217,10 @@ def update(
                 match = False
                 break
         if match:
-            found_match = True
             row.update(set_clause)
             updated_ids.append(row['ID'])
     
-    if not found_match:
-        pass 
-        
     return table_data, updated_ids
-
 
 @handle_db_errors
 @confirm_action("удаление записи")
@@ -229,9 +237,11 @@ def delete(
     if not where_clause:
         raise ValueError("Для удаления необходимо условие where")
 
+    select_cacher(clear=True)
+
     new_data = []
     deleted_ids = []
-    
+
     for row in table_data:
         match = True
         for key, val in where_clause.items():
@@ -242,5 +252,5 @@ def delete(
             deleted_ids.append(row['ID'])
         else:
             new_data.append(row)
-            
+
     return new_data, deleted_ids
