@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "poetry init project-2-romanov-m25-555"
+version = "0.1.0"
+description = ""
+authors = ["Mikhail <miroshama@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "src", from = "." },
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.scripts]
+project = "src.primitive_db.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
