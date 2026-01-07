@@ -2,12 +2,15 @@
 
 import functools
 import time
+
 import prompt
+
 
 def handle_db_errors(func):
     '''
     Декоратор для перехвата ошибок БД (KeyError, ValueError, FileNotFoundError).
-    В случае ошибки выводит сообщение и возвращает первый аргумент (обычно metadata или data)
+    В случае ошибки выводит сообщение и возвращает первый аргумент
+    (обычно metadata или data).
     '''
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -34,7 +37,13 @@ def confirm_action(action_name: str):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            answer = prompt.string(f'Вы уверены, что хотите выполнить "{action_name}"? [y/n]: ')
+            # Разбиваем длинную f-строку на две части
+            msg = (
+                f'Вы уверены, что хотите выполнить "{action_name}"? '
+                f'[y/n]: '
+            )
+            answer = prompt.string(msg)
+            
             if answer.lower() == 'y':
                 return func(*args, **kwargs)
             else:

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from src.primitive_db.constants import ALLOWED_TYPES
 from src.primitive_db.decorators import confirm_action, handle_db_errors, log_time
 
+
 def create_cacher():
     """Создает кэшер с замкнутым словарем cache."""
     cache = {}
@@ -43,7 +44,9 @@ def cast_value(value: str, target_type: str) -> Any:
     return str(value).strip('"').strip("'")
 
 @handle_db_errors
-def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) -> Dict[str, Any]:
+def create_table(
+    metadata: Dict[str, Any], table_name: str, columns: List[str]
+    )-> Dict[str, Any]:
     '''
     Функция создания таблицы
     
@@ -62,12 +65,18 @@ def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) 
 
     for col_def in columns:
         if ':' not in col_def:
-            raise ValueError(f"Неверный формат столбца '{col_def}'. Используйте имя:тип")
+            raise ValueError(
+                f"Неверный формат столбца '{col_def}'. "
+                f"Используйте имя:тип"
+            )
         
         col_name, col_type = col_def.split(':', 1)
         
         if col_type not in ALLOWED_TYPES:
-            raise ValueError(f"Недопустимый тип данных '{col_type}'. Доступны: {ALLOWED_TYPES}")
+            raise ValueError(
+                f"Недопустимый тип данных '{col_type}'. "
+                f"Доступны: {ALLOWED_TYPES}"
+            )
         
         final_name = 'ID' if col_name.lower() == 'id' else col_name
         table_schema.append({'name': final_name, 'type': col_type})
@@ -75,7 +84,10 @@ def create_table(metadata: Dict[str, Any], table_name: str, columns: List[str]) 
     metadata[table_name] = table_schema
     
     col_str_list = [f"{col['name']}:{col['type']}" for col in table_schema]
-    print(f'Таблица "{table_name}" успешно создана со столбцами: {", ".join(col_str_list)}')
+    print(
+        f'Таблица "{table_name}" успешно создана '
+        f'со столбцами: {", ".join(col_str_list)}'
+    )
     return metadata
 
 
@@ -108,7 +120,9 @@ def list_tables(metadata: Dict[str, Any]) -> None:
 
 @handle_db_errors
 @log_time
-def insert(metadata: Dict[str, Any], table_name: str, values: List[str]) -> Tuple[Dict[str, Any], int]:
+def insert(
+    metadata: Dict[str, Any], table_name: str, values: List[str]
+) -> Tuple[Dict[str, Any], int]:
     '''
     Функция реализации insert
     
@@ -134,7 +148,10 @@ def insert(metadata: Dict[str, Any], table_name: str, values: List[str]) -> Tupl
 
 @handle_db_errors
 @log_time
-def select(table_data: List[Dict[str, Any]], where_clause: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+def select(
+    table_data: List[Dict[str, Any]],
+    where_clause: Optional[Dict[str, Any]] = None
+) -> List[Dict[str, Any]]:
     '''
     Функция реализации select
     
@@ -162,7 +179,11 @@ def select(table_data: List[Dict[str, Any]], where_clause: Optional[Dict[str, An
 
 
 @handle_db_errors
-def update(table_data: List[Dict[str, Any]], set_clause: Dict[str, Any], where_clause: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[int]]:
+def update(
+    table_data: List[Dict[str, Any]],
+    set_clause: Dict[str, Any],
+    where_clause: Dict[str, Any]
+) -> Tuple[List[Dict[str, Any]], List[int]]:
     '''
     Функция для реализации update
     
@@ -195,7 +216,10 @@ def update(table_data: List[Dict[str, Any]], set_clause: Dict[str, Any], where_c
 
 @handle_db_errors
 @confirm_action("удаление записи")
-def delete(table_data: List[Dict[str, Any]], where_clause: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[int]]:
+def delete(
+    table_data: List[Dict[str, Any]],
+    where_clause: Dict[str, Any]
+) -> Tuple[List[Dict[str, Any]], List[int]]:
     '''
     Функция для реализации delete
     

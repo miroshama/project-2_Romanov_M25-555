@@ -1,5 +1,6 @@
 import shlex
 
+
 def parse_where(args: list) -> dict:
     '''
     Функция для извлучения из where

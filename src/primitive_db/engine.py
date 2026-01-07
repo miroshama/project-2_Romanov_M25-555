@@ -1,14 +1,13 @@
 # src/primitive_db/engine.py
 
 import shlex
+
 import prompt
 from prettytable import PrettyTable
 
-from src.primitive_db import core
-from src.primitive_db import utils
-from src.primitive_db import parser
-
+from src.primitive_db import core, parser, utils
 from src.primitive_db.constants import DB_META_PATH
+
 
 def print_help():
     '''
@@ -16,15 +15,30 @@ def print_help():
     '''
     print("\n***Процесс работы с таблицей***")
     print("Функции:")
-    print("<command> create_table <имя_таблицы> <столбец1:тип> .. - создать таблицу")
+    print(
+        "<command> create_table <имя_таблицы> <столбец1:тип> .. "
+        "- создать таблицу"
+    )
     print("<command> list_tables - показать список всех таблиц")
     print("<command> drop_table <имя_таблицы> - удалить таблицу")
-    
+
     print("\n***Операции с данными***")
-    print("<command> insert into <имя_таблицы> values (<значение1>, ..) - создать запись")
-    print("<command> select from <имя_таблицы> [where <col> = <val>] - читать записи")
-    print("<command> update <имя_таблицы> set <col> = <val> where <col> = <val> - обновить")
-    print("<command> delete from <имя_таблицы> where <col> = <val> - удалить запись")
+    print(
+        "<command> insert into <имя_таблицы> values (<значение1>, ..) "
+        "- создать запись"
+    )
+    print(
+        "<command> select from <имя_таблицы> [where <col> = <val>] "
+        "- читать записи"
+    )
+    print(
+        "<command> update <имя_таблицы> set <col> = <val> "
+        "where <col> = <val> - обновить"
+    )
+    print(
+        "<command> delete from <имя_таблицы> where <col> = <val> "
+        "- удалить запись"
+    )
     print("<command> info <имя_таблицы> - информация о таблице")
 
     print("\nОбщие команды:")
@@ -102,7 +116,10 @@ def run():
                 
                 table_data.append(new_row)
                 utils.save_table_data(table_name, table_data)
-                print(f'Запись с ID={new_id} успешно добавлена в таблицу "{table_name}".')
+                print(
+                    f'Запись с ID={new_id} успешно добавлена '
+                    f'в таблицу "{table_name}".'
+                )
 
             elif command == 'select':
                 if len(args) < 3:
@@ -159,7 +176,10 @@ def run():
                 utils.save_table_data(table_name, new_data)
                 
                 if updated_ids:
-                    print(f'Запись с ID={updated_ids[0]} в таблице "{table_name}" успешно обновлена.')
+                    print(
+                        f'Запись с ID={updated_ids[0]} в таблице '
+                        f'"{table_name}" успешно обновлена.'
+                    )
                 else:
                     print("Ни одной записи не было обновлено.")
 
@@ -181,7 +201,10 @@ def run():
                 utils.save_table_data(table_name, new_data)
                 
                 if deleted_ids:
-                    print(f'Запись с ID={deleted_ids[0]} успешно удалена из таблицы "{table_name}".')
+                    print(
+                        f'Запись с ID={deleted_ids[0]} успешно удалена '
+                        f'из таблицы "{table_name}".'
+                    )
                 else:
                     print("Записи для удаления не найдены.")
 
