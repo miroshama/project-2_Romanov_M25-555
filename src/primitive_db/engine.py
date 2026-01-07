@@ -61,7 +61,8 @@ def run():
                     table_name = args[1]
                     columns = args[2:]
                     new_metadata = core.create_table(metadata, table_name, columns)
-                    utils.save_metadata(DB_META_PATH, new_metadata)
+                    if new_metadata is not None:
+                        utils.save_metadata(DB_META_PATH, new_metadata)
 
             elif command == 'drop_table':
                 if len(args) < 2:
@@ -69,7 +70,8 @@ def run():
                 else:
                     table_name = args[1]
                     new_metadata = core.drop_table(metadata, table_name)
-                    utils.save_metadata(DB_META_PATH, new_metadata)
+                    if new_metadata is not None:
+                        utils.save_metadata(DB_META_PATH, new_metadata)
             
             elif command == 'list_tables':
                 core.list_tables(metadata)
@@ -84,7 +86,12 @@ def run():
                 
                 table_data = utils.load_table_data(table_name)
                 
-                new_row, _ = core.insert(metadata, table_name, vals)
+                result = core.insert(metadata, table_name, vals)
+                
+                if not isinstance(result, tuple):
+                    continue
+                
+                new_row, _ = result
                 
                 if table_data:
                     new_id = max(row['ID'] for row in table_data) + 1
@@ -108,6 +115,9 @@ def run():
                 
                 results = core.select(table_data, where_clause)
                 
+                if results is None:
+                    continue
+
                 if table_name in metadata:
                     pt = PrettyTable()
                     field_names = [col['name'] for col in metadata[table_name]]
@@ -138,16 +148,20 @@ def run():
                             break
                 
                 set_val = core.cast_value(raw_val, target_type)
-                
                 where_clause = parser.parse_where(args)
                 
-                new_data, updated_ids = core.update(table_data, {set_col: set_val}, where_clause)
+                result = core.update(table_data, {set_col: set_val}, where_clause)
+                
+                if not isinstance(result, tuple):
+                    continue
+
+                new_data, updated_ids = result
                 utils.save_table_data(table_name, new_data)
                 
                 if updated_ids:
                     print(f'Запись с ID={updated_ids[0]} в таблице "{table_name}" успешно обновлена.')
                 else:
-                    print("Ни одной записи не было обновлено (возможно, не найдено совпадений).")
+                    print("Ни одной записи не было обновлено.")
 
             elif command == 'delete':
                 if len(args) < 3:
@@ -158,7 +172,12 @@ def run():
                 table_data = utils.load_table_data(table_name)
                 where_clause = parser.parse_where(args)
                 
-                new_data, deleted_ids = core.delete(table_data, where_clause)
+                result = core.delete(table_data, where_clause)
+
+                if not isinstance(result, tuple):
+                    continue
+
+                new_data, deleted_ids = result
                 utils.save_table_data(table_name, new_data)
                 
                 if deleted_ids:
